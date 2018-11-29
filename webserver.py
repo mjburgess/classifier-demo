@@ -5,9 +5,13 @@ import SocketServer
 
 import classification
 import glob 
+import sys 
 
-PREDICTOR = predict_simple
-
+RESULTS = map(
+	classification.predict_simple, 
+	glob.glob('input/*.jpg')
+)
+	
 class Server(BaseHTTPRequestHandler):    
     def _set_headers(self):
         self.send_response(200)
@@ -17,10 +21,10 @@ class Server(BaseHTTPRequestHandler):
     def do_GET(self):
         self._set_headers()
         self.wfile.write("<html><body><pre>")
-        
-        for prediction in map(PREDICTOR, glob.glob('input/*.jpg')):
-            self.wfile.write(prediction)
-        
+		
+        for result in RESULTS:
+			self.wfile.write(result)
+			
         self.wfile.write("</pre></body></html>")
 
     def do_HEAD(self):
@@ -29,10 +33,14 @@ class Server(BaseHTTPRequestHandler):
     def do_POST(self):
         return self.do_GET()
         
-server_address = ('', 80)
-httpd = HTTPServer(server_address, Server)
+			
 
-print 'Starting httpd...'
-httpd.serve_forever()
+if len(sys.argv) > 1:
+	server_address = ('', 80)
+	httpd = HTTPServer(server_address, Server)
 
+	print 'Starting httpd...'
+	httpd.serve_forever()
+else:
+	print map(str, RESULTS)
     

@@ -15,7 +15,7 @@ def predict_simple(image):
     import urllib
     import re 
     
-    for line in open('urls.txt'):
+    for line in open('input/urls.txt'):
         if image in line:
             result = re.search(r'<title>\s*(\S*)', urllib.urlopen(line).read())
             result = result and result.group(1)
