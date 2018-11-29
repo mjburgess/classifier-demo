@@ -46,17 +46,25 @@ def predict_neural(image, suggestions=3):
 def _ask_google(url):
     import urllib2
     import re 
+
+    GGL = "http://www.google.com/searchbyimage?hl=en&image_url="
     
-    req = urllib2.Request(GGL + url, headers={ 'User-Agent': AGENT })
+    AGENT = { 
+        'User-Agent': ' '.join([
+            "Mozilla/5.0 (Windows NT 6.1; WOW64)" 
+            "AppleWebKit/537.36 (KHTML, like Gecko)"
+            "Chrome/32.0.1700.76 Safari/537.36"
+        ])
+    }
+
+    req = urllib2.Request(GGL + url, headers=AGENT)
     html = urllib2.urlopen(req).read()
 
-    result = re.search(r'Best guess for this image:\s*<a[^>]*>([^<]*)</a>', html)
+    result = re.search(r'guess[^<]*<a[^>]*>([^<]*)</a>', html)
     
     return result and result.group(1)
     
 
-GGL = "http://www.google.com/searchbyimage?hl=en&image_url="
-AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.76 Safari/537.36"
 
 
     
