@@ -1,19 +1,30 @@
 #!/usr/bin/env python
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
-
 from classification import predict_simple as predict
+
+"""
+To use the ResNet50 pre-trained CNN
+    pip install keras tensorflow pillow
+    
+and then uncomment the following import...
+"""
+
+# from classification import predict_neural as predict
+
 import glob 
 import sys 
-
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import SocketServer
     
-class PredictionServer(BaseHTTPRequestHandler):    
+class PredictionServer(BaseHTTPRequestHandler):  
+    TEMPLATE = 'template.html'
+    
     @staticmethod
     def _predict():    
         results = []
         for file in glob.glob('input/*.jpg'):
-            results.append(map(str, predict(file)))
+            for guess in predict(file):
+                result.append(guess)
             
         return results
         
@@ -24,13 +35,12 @@ class PredictionServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write("<html><body>")
         
-        for result in PredictionServer._predict():
-            for guess in result:
-                self.wfile.write(result)
-            
-        self.wfile.write("</body></html>")
+        self.wfile.write(
+            open(TEMPLATE).read().format(
+                predictions='\n'.join(PredictionServer._predict())
+            )
+        )
 
     def do_HEAD(self):
         self._set_headers()
@@ -47,6 +57,7 @@ if len(sys.argv) > 1:
     print 'Starting httpd...'
     httpd.serve_forever()
 else:
+    print "Predictions for images in input/"
     for image in PredictionServer._predict():
         for guess in image:
             print guess

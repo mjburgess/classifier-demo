@@ -8,11 +8,11 @@ class Prediction(object):
     def __str__(self):
         return '\n'.join([
             '<img src="{target}"/>',
-            '<p>{label}: {description}</p>',
-            '<p>Pr: {probability}</p>'
+            '    <p>{label}: {description}</p>',
+            '    <p>Pr: {probability}</p>'
         ]).format(**self.__dict__)
     
-def predict_simple(image):
+def predict_simple(image_path):
     """
         predicts using google 
     """
@@ -20,12 +20,12 @@ def predict_simple(image):
     
     result = None
     for line in open('input/urls.txt'):
-        if os.path.basename(image) in line:
+        if os.path.basename(image_path) in line:
             result = _ask_google(line.strip())
             
-    return [Prediction(image, result or "UNKNOWN", 'Simple Prediction', 0)]
+    return [Prediction(image_path, result or "UNKNOWN", 'Simple Prediction', 0)]
     
-def predict_neural(image, suggestions=3):
+def predict_neural(image_path, suggestions=3):
     """
         predicts using a pre-trained neural network
     """
@@ -37,13 +37,13 @@ def predict_neural(image, suggestions=3):
     
     model = ResNet50(weights='imagenet')
     
-    img = image.load_img(image, target_size=(224, 224))
+    img = image.load_img(image_path, target_size=(224, 224))
 
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
 
-    return [ Prediction(*result) 
+    return [ Prediction(image_path, *result) 
         for result in decode_predictions(model.predict(x), top=suggestions)[0] 
     ]
     
