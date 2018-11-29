@@ -1,11 +1,16 @@
 class Prediction(object):
-    def __init__(self, label, description, probability):
+    def __init__(self, target, label, description, probability):
+        self.target = target
         self.label = label
         self.description = description
         self.probability = probability
     
     def __str__(self):
-        return '{label}: {description} @ {probability}'.format(**self.__dict__)
+        return '\n'.join([
+            '<img src="{target}"/>',
+            '<p>{label}: {description}</p>',
+            '<p>Pr: {probability}</p>'
+        ]).format(**self.__dict__)
     
 def predict_simple(image):
     """
@@ -18,7 +23,7 @@ def predict_simple(image):
         if os.path.basename(image) in line:
             result = _ask_google(line.strip())
             
-    return [Prediction(result or "UNKNOWN", 'Simple Prediction', 0)]
+    return [Prediction(image, result or "UNKNOWN", 'Simple Prediction', 0)]
     
 def predict_neural(image, suggestions=3):
     """
