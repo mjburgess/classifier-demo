@@ -3,18 +3,20 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
 
-import classification
+from classification import predict_simple as predict
 import glob 
 import sys 
 
-RESULTS = []
-for file in glob.glob('input/*.jpg'):
-    RESULTS.append(
-        map(str, classification.predict_simple(file))
-    )
-
     
-class Server(BaseHTTPRequestHandler):    
+class PredictionServer(BaseHTTPRequestHandler):    
+    @staticmethod
+    def _predict():    
+        results = []
+        for file in glob.glob('input/*.jpg'):
+            results.append(map(str, predict(file)))
+            
+        return results
+        
     def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -24,7 +26,7 @@ class Server(BaseHTTPRequestHandler):
         self._set_headers()
         self.wfile.write("<html><body><pre>")
         
-        for result in RESULTS:
+        for result in PredictionServer._predict():
             self.wfile.write(result)
             
         self.wfile.write("</pre></body></html>")
@@ -44,5 +46,5 @@ if len(sys.argv) > 1:
     print 'Starting httpd...'
     httpd.serve_forever()
 else:
-    print RESULTS
+    print PredictionServer._predict()
     
