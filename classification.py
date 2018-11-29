@@ -8,25 +8,25 @@ class Prediction(object):
         return '{label}: {description} @ {probability}'.format(**self.__dict__)
     
 def predict_simple(image):
-	"""
-		predicts the first word from the title 
-			of the webpage where the image was found
-	"""
-	import urllib
-	import re 
-	
-	for line in open('urls.txt'):
-		if image in line:
-			result = re.search(r'<title>\s*(\S*)', urllib.urlopen(line).read())
-			result = result and result.group(1)
-			
+    """
+        predicts the first word from the title 
+            of the webpage where the image was found
+    """
+    import urllib
+    import re 
+    
+    for line in open('urls.txt'):
+        if image in line:
+            result = re.search(r'<title>\s*(\S*)', urllib.urlopen(line).read())
+            result = result and result.group(1)
+            
     return [Prediction(result or "UNKNOWN", 'Simple Prediction', 0)]
     
 def predict_neural(image, suggestions=3):
-	"""
-		predicts using a pre-trained neural network
-	"""
-	
+    """
+        predicts using a pre-trained neural network
+    """
+    
     from keras.applications.resnet50 import ResNet50
     from keras.preprocessing import image
     from keras.applications.resnet50 import preprocess_input, decode_predictions

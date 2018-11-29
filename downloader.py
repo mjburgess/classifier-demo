@@ -6,4 +6,4 @@ import urllib
 
 for line in open('urls.txt'):
 	with open('input/' + line.split('/')[-1], 'wb') as image:
-		image.write(urllib.urlopen(line).read())
+		image.write(urllib.urlopen(line).read().strip())
