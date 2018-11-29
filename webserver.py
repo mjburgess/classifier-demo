@@ -7,10 +7,12 @@ import classification
 import glob 
 import sys 
 
-RESULTS = map(
-	classification.predict_simple, 
-	glob.glob('input/*.jpg')
-)
+RESULTS = []
+for file in glob.glob('input/*.jpg'):
+	RESULTS.append(
+		map(str, classification.predict_simple(file))
+	)
+
 	
 class Server(BaseHTTPRequestHandler):    
     def _set_headers(self):
@@ -42,5 +44,5 @@ if len(sys.argv) > 1:
 	print 'Starting httpd...'
 	httpd.serve_forever()
 else:
-	print map(str, RESULTS)
+	print RESULTS
     
