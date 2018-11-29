@@ -24,12 +24,13 @@ class PredictionServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write("<html><body><pre>")
+        self.wfile.write("<html><body>")
         
         for result in PredictionServer._predict():
-            self.wfile.write(result)
+            for guess in result:
+                self.wfile.write(result)
             
-        self.wfile.write("</pre></body></html>")
+        self.wfile.write("</body></html>")
 
     def do_HEAD(self):
         self._set_headers()
@@ -46,5 +47,7 @@ if len(sys.argv) > 1:
     print 'Starting httpd...'
     httpd.serve_forever()
 else:
-    print PredictionServer._predict()
+    for image in PredictionServer._predict():
+        for guess in image:
+            print guess
     
