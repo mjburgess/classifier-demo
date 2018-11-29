@@ -11,7 +11,7 @@ def predict_simple(image):
     """
         predicts using google 
     """
-	import os
+    import os
     
     result = None
     for line in open('input/urls.txt'):
@@ -41,15 +41,15 @@ def predict_neural(image, suggestions=3):
     return [ Prediction(*result) 
         for result in decode_predictions(model.predict(x), top=suggestions)[0] 
     ]
-	
-	
+    
+    
 def _ask_google(url):
     import urllib
     import re 
-	
-	GGL = "https://www.google.co.uk/searchbyimage?hl=en&authuser=0&biw=1458&bih=647&site=search&image_url="
-	
-	page = urllib.urlopen(GGL + line).read()
-	result = re.search(r'Best guess for this image:\s*<a[^>]*>([^<]*)</a>', page)
-	
-	return result and result.group(1)
+    
+    GGL = "https://www.google.co.uk/searchbyimage?hl=en&authuser=0&biw=1458&bih=647&site=search&image_url="
+    
+    page = urllib.urlopen(GGL + line).read()
+    result = re.search(r'Best guess for this image:\s*<a[^>]*>([^<]*)</a>', page)
+    
+    return result and result.group(1)
