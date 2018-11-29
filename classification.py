@@ -9,9 +9,11 @@ class Prediction(object):
     
 def predict_simple(image):
     """
-        predicts the first word from the title 
-            of the webpage where the image was found
+        predicts using google 
     """
+	
+	GGL = "https://www.google.co.uk/searchbyimage?hl=en&authuser=0&biw=1458&bih=647&site=search&image_url="
+	
     import urllib
     import re 
 	import os
@@ -19,7 +21,9 @@ def predict_simple(image):
     result = None
     for line in open('input/urls.txt'):
         if os.path.basename(image) in line:
-            result = re.search(r'<title>\s*(\S*)', urllib.urlopen(line).read())
+            result = re.search(
+				r'Best guess for this image:\s*<a[^>]*>([^<]*)</a>', urllib.urlopen(GGL + line).read()
+			)
             result = result and result.group(1)
             
     return [Prediction(result or "UNKNOWN", 'Simple Prediction', 0)]
