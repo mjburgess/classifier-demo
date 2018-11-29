@@ -24,7 +24,7 @@ class PredictionServer(BaseHTTPRequestHandler):
         results = []
         for file in glob.glob('input/*.jpg'):
             for guess in predict(file):
-                result.append(guess)
+                results.append(str(guess))
             
         return results
         
@@ -37,7 +37,7 @@ class PredictionServer(BaseHTTPRequestHandler):
         self._set_headers()
         
         self.wfile.write(
-            open(TEMPLATE).read().format(
+            open(PredictionServer.TEMPLATE).read().format(
                 predictions='\n'.join(PredictionServer._predict())
             )
         )
@@ -52,13 +52,12 @@ class PredictionServer(BaseHTTPRequestHandler):
 
 if len(sys.argv) > 1:
     server_address = ('', 80)
-    httpd = HTTPServer(server_address, Server)
+    httpd = HTTPServer(server_address, PredictionServer)
 
     print 'Starting httpd...'
     httpd.serve_forever()
 else:
     print "Predictions for images in input/"
-    for image in PredictionServer._predict():
-        for guess in image:
-            print guess
+    for guess in PredictionServer._predict():
+		print guess
     
